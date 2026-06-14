@@ -1,0 +1,341 @@
+<!doctype html>
+<html lang="sq">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>SneakerSHQ — Patika për Meshkuj, Femra dhe Fëmijë</title>
+<meta name="description" content="Bli patika online: meshkuj, femra, fëmijë. Brende të ndryshme. Pagesa me kartelë ose cash." />
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body { font-family: ui-sans-serif, system-ui, sans-serif; }
+  .badge { font-size:10px; padding:2px 8px; border-radius:9999px; color:#fff; font-weight:700; text-transform:uppercase; letter-spacing:.05em; }
+</style>
+</head>
+<body class="bg-white text-slate-900">
+
+<!-- Header -->
+<header class="sticky top-0 z-30 border-b bg-white/80 backdrop-blur">
+  <div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
+    <h1 class="text-2xl font-black">Sneaker<span class="text-indigo-600">SHQ</span></h1>
+    <button onclick="openCart()" class="relative inline-flex items-center gap-2 rounded-full bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:opacity-90">
+      🛒 Shporta <span id="cart-count" class="ml-1 hidden rounded-full bg-white px-2 py-0.5 text-xs font-bold text-slate-900">0</span>
+    </button>
+  </div>
+</header>
+
+<!-- Hero -->
+<section class="relative h-72 md:h-96 overflow-hidden bg-slate-900">
+  <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=1600" alt="Patika" class="absolute inset-0 h-full w-full object-cover opacity-60" />
+  <div class="relative mx-auto flex h-full max-w-6xl items-center px-4 text-white">
+    <div>
+      <h2 class="text-4xl md:text-6xl font-black">Patika për të gjithë</h2>
+      <p class="mt-3 max-w-xl text-lg text-white/85">Meshkuj, Femra dhe Fëmijë. Brende si Nike, Adidas, Puma. Pagesa me kartelë ose cash.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Kategoritë e mëdha -->
+<section class="mx-auto max-w-6xl px-4 pt-12 pb-4">
+  <div class="mb-8 text-center">
+    <h2 class="text-3xl md:text-5xl font-black">Bli sipas kategorisë</h2>
+    <p class="mt-2 text-slate-500">Zgjidh kategorinë tënde dhe nis blerjen.</p>
+  </div>
+  <div id="categories" class="grid grid-cols-1 gap-6 md:grid-cols-3"></div>
+</section>
+
+<!-- Highlights -->
+<div id="highlights"></div>
+
+<!-- Të gjitha + filtra -->
+<section id="te-gjitha" class="mx-auto max-w-6xl px-4 py-8">
+  <h2 class="text-2xl md:text-3xl font-black">Të gjitha patikat</h2>
+  <p class="mt-1 text-sm text-slate-500">Filtro sipas kategorisë dhe brendit.</p>
+  <div class="mt-6 flex flex-wrap items-center gap-2">
+    <div id="cat-filters" class="flex flex-wrap gap-2"></div>
+    <select id="brand-filter" class="rounded-full border bg-white px-4 py-2 text-sm font-medium"></select>
+  </div>
+  <div id="grid" class="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"></div>
+</section>
+
+<footer class="border-t py-8 text-center text-sm text-slate-500">
+  © <span id="year"></span> SneakerSHQ. Të gjitha të drejtat e rezervuara.
+</footer>
+
+<!-- Cart Drawer -->
+<div id="cart" class="fixed inset-0 z-50 hidden">
+  <div class="absolute inset-0 bg-black/50" onclick="closeCart()"></div>
+  <aside class="absolute right-0 top-0 flex h-full w-full max-w-md flex-col bg-white shadow-xl">
+    <div class="flex items-center justify-between border-b p-4">
+      <h3 class="text-lg font-bold">Shporta jote</h3>
+      <button onclick="closeCart()" class="rounded-full p-2 hover:bg-slate-100">✕</button>
+    </div>
+    <div id="cart-items" class="flex-1 overflow-y-auto p-4"></div>
+    <div class="border-t p-4">
+      <div class="mb-3 flex items-center justify-between text-lg">
+        <span>Totali</span><span id="cart-total" class="font-black">0€</span>
+      </div>
+      <button onclick="openCheckout()" id="checkout-btn" class="w-full rounded-full bg-indigo-600 py-3 font-semibold text-white hover:opacity-90 disabled:opacity-40" disabled>Vazhdo te pagesa</button>
+    </div>
+  </aside>
+</div>
+
+<!-- Checkout Modal -->
+<div id="checkout" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/60 p-4">
+  <div class="w-full max-w-lg rounded-2xl bg-white shadow-2xl overflow-hidden">
+    <div class="flex items-center justify-between border-b p-4">
+      <h3 class="text-lg font-bold">Përfundo porosinë</h3>
+      <button onclick="closeCheckout()" class="rounded-full p-2 hover:bg-slate-100">✕</button>
+    </div>
+    <form id="checkout-form" class="space-y-4 p-4">
+      <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <input name="name" placeholder="Emri i plotë" class="rounded-lg border px-3 py-2 text-sm" required />
+        <input name="phone" placeholder="Telefoni" class="rounded-lg border px-3 py-2 text-sm" required />
+        <input name="address" placeholder="Adresa e dorëzimit" class="sm:col-span-2 rounded-lg border px-3 py-2 text-sm" required />
+      </div>
+      <div>
+        <div class="mb-2 text-sm font-semibold">Mënyra e pagesës</div>
+        <div class="grid grid-cols-2 gap-2">
+          <button type="button" data-pay="karte" class="pay-btn rounded-lg border p-3 text-sm font-medium border-indigo-600 bg-indigo-50">💳 Kartelë</button>
+          <button type="button" data-pay="cash" class="pay-btn rounded-lg border p-3 text-sm font-medium">💵 Cash në dorëzim</button>
+        </div>
+      </div>
+      <div id="card-fields" class="space-y-3 rounded-lg border p-3">
+        <input name="card" placeholder="Numri i kartelës" class="w-full rounded-lg border px-3 py-2 text-sm" />
+        <div class="grid grid-cols-2 gap-3">
+          <input name="exp" placeholder="MM/VV" class="rounded-lg border px-3 py-2 text-sm" />
+          <input name="cvv" placeholder="CVV" class="rounded-lg border px-3 py-2 text-sm" />
+        </div>
+      </div>
+      <div class="flex items-center justify-between border-t pt-3">
+        <span class="text-sm text-slate-500">Totali për pagesë</span>
+        <span id="checkout-total" class="text-xl font-black">0€</span>
+      </div>
+      <button class="w-full rounded-full bg-indigo-600 py-3 font-semibold text-white hover:opacity-90">Konfirmo porosinë</button>
+    </form>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="fixed top-4 right-4 z-[100] hidden rounded-lg bg-slate-900 px-4 py-2 text-sm text-white shadow-lg"></div>
+
+<script>
+// ---------- TË DHËNAT ----------
+const IMG = {
+  m1: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600",
+  m2: "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=600",
+  m3: "https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?w=600",
+  m4: "https://images.unsplash.com/photo-1551107696-a4b0c5a0d9a2?w=600",
+  w1: "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=600",
+  w2: "https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?w=600",
+  w3: "https://images.unsplash.com/photo-1518894781321-630e638d0742?w=600",
+  w4: "https://images.unsplash.com/photo-1539185441755-769473a23570?w=600",
+  k1: "https://images.unsplash.com/photo-1514989940723-e8e51635da57?w=600",
+  k2: "https://images.unsplash.com/photo-1514327605112-b887c0e61c0a?w=600",
+  k3: "https://images.unsplash.com/photo-1576672843344-f01907a9d40c?w=600",
+  k4: "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?w=600",
+  catMen:   "https://images.unsplash.com/photo-1460353581641-37baddab0fa2?w=900",
+  catWomen: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=900",
+  catKids:  "https://images.unsplash.com/photo-1521223890158-f9f7c3d5d504?w=900",
+};
+
+const PRODUCTS = [
+  { id:"m1", name:"Air Classic White", brand:"Nike", category:"meshkuj", price:89, image:IMG.m1, isBestseller:true },
+  { id:"m2", name:"Run Boost Red", brand:"Adidas", category:"meshkuj", price:99, image:IMG.m2, isNew:true, isTrending:true },
+  { id:"m3", name:"Urban Step", brand:"Puma", category:"meshkuj", price:75, image:IMG.m3, isTrending:true },
+  { id:"m4", name:"Flex Grey Blue", brand:"New Balance", category:"meshkuj", price:109, image:IMG.m4, isNew:true },
+  { id:"m5", name:"Leather Walk Brown", brand:"Puma", category:"meshkuj", price:119, image:IMG.m1 },
+  { id:"m6", name:"Court Pro Black", brand:"Adidas", category:"meshkuj", price:95, image:IMG.m2, isBestseller:true },
+  { id:"w1", name:"Pink Cloud", brand:"Nike", category:"femra", price:85, image:IMG.w1, isNew:true },
+  { id:"w2", name:"Beige Minimal", brand:"Adidas", category:"femra", price:95, image:IMG.w2, isBestseller:true, isTrending:true },
+  { id:"w3", name:"City Walker", brand:"New Balance", category:"femra", price:79, image:IMG.w3 },
+  { id:"w4", name:"Lavender Run", brand:"Puma", category:"femra", price:89, image:IMG.w4, isTrending:true },
+  { id:"w5", name:"Chunky Noir", brand:"Adidas", category:"femra", price:115, image:IMG.w2, isNew:true, isBestseller:true },
+  { id:"k1", name:"Rainbow Jr", brand:"Puma", category:"femije", price:49, image:IMG.k1, isNew:true },
+  { id:"k2", name:"Pink Velcro", brand:"Nike", category:"femije", price:45, image:IMG.k2, isBestseller:true },
+  { id:"k3", name:"Mini Sport", brand:"Adidas", category:"femije", price:55, image:IMG.k3, isTrending:true },
+  { id:"k4", name:"Green Dash", brand:"Nike", category:"femije", price:52, image:IMG.k4, isNew:true },
+];
+
+const CATEGORIES = [
+  { id:"all", label:"Të gjitha" },
+  { id:"meshkuj", label:"Meshkuj" },
+  { id:"femra", label:"Femra" },
+  { id:"femije", label:"Fëmijë" },
+];
+const BRANDS = ["Të gjitha","Nike","Adidas","Puma","New Balance"];
+
+// ---------- STATE ----------
+let cat = "all", brand = "Të gjitha", payMethod = "karte";
+let cart = [];
+
+// ---------- RENDER ----------
+function productCard(p) {
+  const badges = [
+    p.isNew && '<span class="badge bg-blue-500">E re</span>',
+    p.isBestseller && '<span class="badge bg-orange-500">Bestseller</span>',
+    p.isTrending && '<span class="badge bg-emerald-500">Trend</span>',
+  ].filter(Boolean).join("");
+  return `
+    <article class="group relative overflow-hidden rounded-2xl border bg-white transition hover:shadow-lg">
+      <div class="absolute left-3 top-3 z-10 flex flex-col gap-1">${badges}</div>
+      <div class="overflow-hidden bg-slate-100">
+        <img src="${p.image}" alt="${p.name}" loading="lazy" class="aspect-square w-full object-cover transition group-hover:scale-105" />
+      </div>
+      <div class="p-4">
+        <div class="text-xs font-semibold uppercase tracking-wider text-slate-500">${p.brand}</div>
+        <h3 class="mt-1 text-lg font-semibold">${p.name}</h3>
+        <div class="mt-3 flex items-center justify-between">
+          <span class="text-xl font-bold">${p.price}€</span>
+          <button onclick="addToCart('${p.id}')" class="rounded-full bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:opacity-90">Shto</button>
+        </div>
+      </div>
+    </article>`;
+}
+
+function renderCategories() {
+  const data = [
+    { id:"meshkuj", label:"Meshkuj", img:IMG.catMen, tint:"from-slate-900/80" },
+    { id:"femra",   label:"Femra",   img:IMG.catWomen, tint:"from-pink-900/70" },
+    { id:"femije",  label:"Fëmijë",  img:IMG.catKids, tint:"from-amber-900/70" },
+  ];
+  document.getElementById("categories").innerHTML = data.map(c => `
+    <button onclick="pickCategory('${c.id}')" class="group relative h-72 md:h-96 overflow-hidden rounded-3xl border text-left shadow-sm transition hover:shadow-xl">
+      <img src="${c.img}" alt="${c.label}" loading="lazy" class="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-110" />
+      <div class="absolute inset-0 bg-gradient-to-t ${c.tint} via-black/30 to-transparent"></div>
+      <div class="absolute inset-x-0 bottom-0 flex items-end justify-between p-6 text-white">
+        <h3 class="text-3xl md:text-4xl font-black">${c.label}</h3>
+        <span class="rounded-full bg-white/95 px-4 py-2 text-sm font-bold text-black">Shiko →</span>
+      </div>
+    </button>`).join("");
+}
+
+function renderHighlights() {
+  const rows = [
+    { title:"Gjërat e reja", sub:"Sapo kanë mbërritur", icon:"✨", bg:"bg-blue-100 text-blue-600", filter:p=>p.isNew },
+    { title:"Më të shiturat", sub:"Të preferuarat e klientëve", icon:"🔥", bg:"bg-orange-100 text-orange-600", filter:p=>p.isBestseller },
+    { title:"Në trend", sub:"Çfarë po vishet tani", icon:"📈", bg:"bg-emerald-100 text-emerald-600", filter:p=>p.isTrending },
+  ];
+  document.getElementById("highlights").innerHTML = rows.map(r => {
+    const items = PRODUCTS.filter(r.filter);
+    if (!items.length) return "";
+    return `
+      <section class="mx-auto max-w-6xl px-4 py-10">
+        <div class="mb-6 flex items-center gap-3">
+          <span class="inline-flex h-10 w-10 items-center justify-center rounded-full ${r.bg}">${r.icon}</span>
+          <div>
+            <h2 class="text-2xl md:text-3xl font-black">${r.title}</h2>
+            <p class="text-sm text-slate-500">${r.sub}</p>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">${items.map(productCard).join("")}</div>
+      </section>`;
+  }).join("");
+}
+
+function renderFilters() {
+  document.getElementById("cat-filters").innerHTML = CATEGORIES.map(c => `
+    <button onclick="setCat('${c.id}')" class="rounded-full px-4 py-2 text-sm font-medium ${cat===c.id ? 'bg-slate-900 text-white' : 'bg-slate-100 hover:bg-slate-200'}">${c.label}</button>
+  `).join("");
+  const sel = document.getElementById("brand-filter");
+  sel.innerHTML = BRANDS.map(b => `<option ${b===brand?'selected':''}>${b}</option>`).join("");
+  sel.onchange = e => { brand = e.target.value; renderGrid(); };
+}
+
+function renderGrid() {
+  const items = PRODUCTS.filter(p => (cat==="all"||p.category===cat) && (brand==="Të gjitha"||p.brand===brand));
+  document.getElementById("grid").innerHTML = items.length
+    ? items.map(productCard).join("")
+    : `<p class="col-span-full py-12 text-center text-slate-500">S'ka produkte për këtë filtër.</p>`;
+}
+
+function setCat(c) { cat = c; renderFilters(); renderGrid(); }
+function pickCategory(c) { setCat(c); document.getElementById("te-gjitha").scrollIntoView({behavior:"smooth"}); }
+
+// ---------- CART ----------
+function addToCart(id) {
+  const p = PRODUCTS.find(x => x.id===id);
+  const ex = cart.find(i => i.id===id);
+  if (ex) ex.qty++; else cart.push({...p, qty:1});
+  toast(`${p.name} u shtua në shportë`);
+  renderCart();
+}
+function changeQty(id, d) {
+  const it = cart.find(i => i.id===id);
+  if (!it) return;
+  it.qty += d;
+  if (it.qty<=0) cart = cart.filter(i => i.id!==id);
+  renderCart();
+}
+function renderCart() {
+  const count = cart.reduce((s,i)=>s+i.qty,0);
+  const total = cart.reduce((s,i)=>s+i.qty*i.price,0);
+  const c = document.getElementById("cart-count");
+  c.textContent = count; c.classList.toggle("hidden", count===0);
+  document.getElementById("cart-total").textContent = total+"€";
+  document.getElementById("checkout-total").textContent = total+"€";
+  document.getElementById("checkout-btn").disabled = cart.length===0;
+  document.getElementById("cart-items").innerHTML = cart.length === 0
+    ? `<p class="py-12 text-center text-slate-500">Shporta është bosh.</p>`
+    : `<ul class="space-y-4">${cart.map(i => `
+        <li class="flex gap-3 rounded-lg border p-3">
+          <img src="${i.image}" class="h-20 w-20 rounded object-cover" />
+          <div class="flex flex-1 flex-col">
+            <div class="text-xs text-slate-500">${i.brand}</div>
+            <div class="font-semibold">${i.name}</div>
+            <div class="mt-auto flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <button onclick="changeQty('${i.id}',-1)" class="rounded-full border p-1 hover:bg-slate-100">−</button>
+                <span class="w-6 text-center text-sm">${i.qty}</span>
+                <button onclick="changeQty('${i.id}',1)" class="rounded-full border p-1 hover:bg-slate-100">+</button>
+              </div>
+              <span class="font-bold">${i.price*i.qty}€</span>
+            </div>
+          </div>
+        </li>`).join("")}</ul>`;
+}
+function openCart()  { document.getElementById("cart").classList.remove("hidden"); }
+function closeCart() { document.getElementById("cart").classList.add("hidden"); }
+
+// ---------- CHECKOUT ----------
+function openCheckout()  { closeCart(); document.getElementById("checkout").classList.remove("hidden"); document.getElementById("checkout").classList.add("flex"); }
+function closeCheckout() { document.getElementById("checkout").classList.add("hidden"); document.getElementById("checkout").classList.remove("flex"); }
+
+document.querySelectorAll(".pay-btn").forEach(b => {
+  b.onclick = () => {
+    payMethod = b.dataset.pay;
+    document.querySelectorAll(".pay-btn").forEach(x => x.classList.remove("border-indigo-600","bg-indigo-50"));
+    b.classList.add("border-indigo-600","bg-indigo-50");
+    document.getElementById("card-fields").style.display = payMethod==="karte" ? "block" : "none";
+  };
+});
+
+document.getElementById("checkout-form").onsubmit = (e) => {
+  e.preventDefault();
+  const f = new FormData(e.target);
+  if (payMethod==="karte" && (!f.get("card") || !f.get("exp") || !f.get("cvv"))) {
+    return toast("Plotëso të dhënat e kartelës.", true);
+  }
+  cart = []; renderCart(); closeCheckout();
+  toast("Porosia u krye me sukses! Faleminderit.");
+};
+
+// ---------- TOAST ----------
+let toastTimer;
+function toast(msg, err=false) {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.className = `fixed top-4 right-4 z-[100] rounded-lg px-4 py-2 text-sm text-white shadow-lg ${err?'bg-red-600':'bg-slate-900'}`;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.add("hidden"), 2500);
+}
+
+// ---------- INIT ----------
+document.getElementById("year").textContent = new Date().getFullYear();
+renderCategories();
+renderHighlights();
+renderFilters();
+renderGrid();
+renderCart();
+</script>
+</body>
+</html>
